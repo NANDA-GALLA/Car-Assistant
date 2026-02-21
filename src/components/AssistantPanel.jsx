@@ -90,19 +90,22 @@ const AssistantPanel = () => {
             }
 
             // Navigation Detection
-            if (lowerText.includes("navigation to") || lowerText.includes("route to") || lowerText.includes("maps to") || (lowerText.includes("navigation") && lowerText.includes("set")) || (lowerText.includes("maps") && lowerText.includes("set"))) {
+            const isNavCommand = lowerText.includes("navigation") || lowerText.includes("route") || lowerText.includes("map") || lowerText.includes("maps");
+            const isSetCommand = lowerText.includes("set") || lowerText.includes("to") || lowerText.includes("goto");
+
+            if (isNavCommand && isSetCommand) {
                 let destination = "HOME BASE";
-                if (lowerText.includes("to")) {
-                    destination = lowerText.split("to")[1].trim().toUpperCase();
-                } else if (lowerText.includes("maps")) {
-                    const parts = lowerText.split("maps");
-                    if (parts[1]) destination = parts[1].trim().toUpperCase();
-                } else {
-                    const parts = lowerText.split("navigation");
-                    if (parts[1]) destination = parts[1].trim().toUpperCase();
+
+                // Detailed extraction logic
+                if (lowerText.includes("to ")) {
+                    destination = lowerText.split("to ")[1].trim().toUpperCase();
+                } else if (lowerText.includes("set map ")) {
+                    destination = lowerText.split("set map ")[1].trim().toUpperCase();
+                } else if (lowerText.includes("map ")) {
+                    destination = lowerText.split("map ")[1].trim().toUpperCase();
                 }
 
-                if (destination) {
+                if (destination && destination !== "TO") {
                     updateControl('navigation', true);
                     updateControl('destination', destination);
                     response = `Neural Pathing engaged. Navigating to ${destination}.`;
